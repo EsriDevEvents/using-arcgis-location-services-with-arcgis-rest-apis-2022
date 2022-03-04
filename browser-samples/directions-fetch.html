@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>REST request with JavaScript fetch</title>
+  </head>
+  <body>
+  <h1>Directions form</h1>
+  <p>Enter stop points to get directions:</p>
+  <form>
+      <label for="stops">Stops:</label><input type="text" id="stops" name="stops">
+      <button id="requestButton">Request</button>
+  </form>
+  <div>
+      <p id="response"></p>
+  </div>
+  <script>
+
+  // Set the click event handler to make the fetch request
+  document.getElementById("requestButton").addEventListener("click", (clickEvent) => {
+    const stops = document.getElementById("stops").value;
+    if (stops.trim().length > 0) {
+        fetchRequest(stops.trim());
+    } else {
+        document.getElementById("response").innerText = "Enter stop points";
+    }
+    event.preventDefault();
+  });
+
+  // Perform directions request using fetch and put the response on the page.
+  function fetchRequest(stops) {
+    const responseElement = document.getElementById("response");
+    const url = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve";
+    const parameters = {
+      stops: stops,
+      f: "json",
+      startTime: "now",
+      returnDirections: "true",
+      directionsLanguage: "en",
+      token: "YOUR_API_KEY"
+    };
+    fetch(url + "?" + parametersToQueryFormat(parameters), {
+      method: "POST"
+    }).then(response => {
+      if (response.ok) {
+        if (response.status == 200) {
+            response.json().then(jsonObject => {
+              responseElement.innerText = JSON.stringify(jsonObject);
+            });
+        } else {
+          responseElement.innerText = "There was an error: " + response.status;
+          response.json().then(jsonObject => {
+            responseElement.innerText = responseElement.innerText + ": " + JSON.stringify(jsonObject);
+          });
+        }
+      } else {
+        responseElement.innerText = "There was an error: " + response.status;
+      }
+    })
+    .catch(exception => {
+        responseElement.innerText = "There was an exception: " + exception.toString();
+    })
+  }
+
+  /**
+   * Helper function to convert an object into URL safe query string parameters.
+   */
+  function parametersToQueryFormat(parameters) {
+    let queryParameters = "";
+    for (const key in parameters) {
+      queryParameters += (queryParameters.length > 0 ? "&" : "") + key + "=" + encodeURIComponent(parameters[key]);
+    }
+    return queryParameters;
+  }
+
+  /**
+   * Helper function to convert an object into URL safe form data.
+   */
+  function parametersToFormData(parameters) {
+    let formData = new FormData();
+    for (const key in parameters) {
+      formData.append(key, encodeURIComponent(parameters[key]));
+    }
+    return formData;
+  }
+
+  </script>
+  </body>
+</html>
