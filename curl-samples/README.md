@@ -10,7 +10,7 @@ The file `geocode.sh` demonstrates a simple, hard-coded shell script that uses t
 ./geocode.sh
 ```
 
-The file `arcgis-request.sh` is a slightly better shell script. It breaks out the URL and the parameters into a manageable format for easier changing. The address to geocode is taken from the command line. And the API key is set in the `.env` file.
+The file `arcgis-request.sh` is a slightly better shell script. It breaks out the URL and the parameters into a manageable format for easier changing. The address to geocode is taken from the command line. And the API key is set in the `.env` file. (NOTE: the `.env` file is not saved in version control so that you do not expose your API key.)
 
 To use this script first rename `.env.template` to `.env`. Then edit the file to replace `YOUR_API_KEY` with the API key you get from your [dashboard](https://developers.arcgis.com/dashboard/). Save the file. Then run from a command line:
 
@@ -18,7 +18,7 @@ To use this script first rename `.env.template` to `.env`. Then edit the file to
 ./arcgis-request.sh "Palm Springs Convention Center"
 ```
 
-or any address you wich to geocode. Make sure the address is in quotes if it contains spaces or any special characters.
+or any address you wish to geocode. Make sure the address is in quotes if it contains spaces or any special characters.
 
 ## More information
 
