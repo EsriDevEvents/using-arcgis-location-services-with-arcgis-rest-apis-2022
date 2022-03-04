@@ -1,0 +1,22 @@
+{
+  "name": "location-services-seminar-22",
+  "version": "1.0.0",
+  "description": "Using ArcGIS Location Services with ArcGIS REST JS",
+  "main": "index.js",
+  "scripts": {
+    "doctoc": "node ./node_modules/doctoc/doctoc.js Intro-Postman-Workspace/README.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esridevsummit/location-services-seminar-22.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/esridevsummit/location-services-seminar-22/issues"
+  },
+  "homepage": "https://github.com/esridevsummit/location-services-seminar-22#readme",
+  "devDependencies": {
+    "doctoc": "^2.1.0"
+  }
+}
