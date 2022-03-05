@@ -74,7 +74,8 @@ View: [1. 🔒 Get access token](https://www.postman.com/arcgis-developer/worksp
 
 ### Collection structure
 
-Each collection include documentation related with the service (service specs, APIs availables, etc)
+Each collection include documentation related with the service (service specs, APIs availables, etc). But also some include "Pre-request Script" and "Test" common to all operations (like [📍 Geocoding & Search API (Geolocation)](https://www.postman.com/arcgis-developer/workspace/67f6e6f1-326f-4c0e-bcb9-b07c7a343257/collection/15786767-53db91ae-9385-4134-9070-1900cd2ea7d5))
+
 ![](./images/collection-doc.png)
 
 
@@ -83,15 +84,19 @@ And it also contains:
 * **A folder for each operation** supported by the service (e.g. in Geocoding & Search: direct geocoding, reserve geocoding, batch geocoding, etc.).
 
 * **A folder** with requests **to query service metadata, field structures, etc**.
+
 ![](./images/collection-folders.png)
 View: [2. 📍 Geocoding & Search API (Geolocation)](https://www.postman.com/arcgis-developer/workspace/arcgis-location-services/collection/15786767-53db91ae-9385-4134-9070-1900cd2ea7d5?ctx=documentation)
 
 ### Operation folder structure
 
 We are going to illustrate the structure using the "Find routes and directions" operation within the "**🚙 Routing & Directions API**" as an example:
+
 ![](./images/operations-folder-structure.png)
 
 This and other operations includes:
+
+* **"Pre-request Script" and "Test"** for this operation and common to all examples.
 
 * **One or two "spec requests template**" with all the parameters described in the specification (`*-spec`). There will be one or two depending on whether the operation supports a direct/sync (➡️) and a job/async (🔄) request or not. 
 
