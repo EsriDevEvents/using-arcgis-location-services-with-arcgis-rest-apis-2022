@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Closes facility routing</title>
+
+  <!-- Load Leaflet from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet@3.0.4/dist/esri-leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet-vector@3.0.0/dist/esri-leaflet-vector.js"></script>
+  <!-- Load Esri Leaflet Geocoder from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.css" crossorigin="" />
+  <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.js" crossorigin=""></script>
+
+  <!-- require ArcGIS REST JS libraries from https://unpkg.com -->
+  <script src="https://unpkg.com/@esri/arcgis-rest-request@3.0.0/dist/umd/request.umd.js"></script>
+  <script src="https://unpkg.com/@esri/arcgis-rest-routing@3.0.0/dist/umd/routing.umd.js"></script>
+  <script src="https://unpkg.com/@esri/arcgis-rest-auth@3.0.0/dist/umd/auth.umd.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map {
+        position: absolute;
+        top:0;
+        bottom:0;
+        right:0;
+        left:0;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        color: #323232;
+      }
+
+    .div-icon{
+      filter: drop-shadow( 1px 1px 0px rgba(0, 0, 0, .3))
+      /* box-shadow: 0 3px 2px -2px rgba(0, 0, 0, .7); */
+      /* -webkit-filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));
+      filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7)); */
+    }
+
+    .leaflet-popup-content p {
+      margin: 0
+    }
+    .leaflet-popup-content h3 {
+      margin: 0
+    }
+    .leaflet-popup-content ol {
+      padding: 0rem 14px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <script>
+
+    const apiKey = "YOUR_API_KEY";
+    const basemapEnum = "ArcGIS:Navigation";
+
+    const map = L.map('map', {
+      minZoom: 2
+    }).setView([42.36, -71.06], 14);
+
+    L.esri.Vector.vectorBasemapLayer(basemapEnum, {
+      apiKey: apiKey
+    }).addTo(map);
+
+    const layer = L.esri.featureLayer({
+      url: "https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/SnowParking/FeatureServer/0",
+    }).addTo(map);
+
+    const searchControl = L.esri.Geocoding.geosearch({
+      position: "topright",
+      placeholder: "Enter an address or place e.g. 1 York St",
+      useMapBounds: false,
+      zoomToResult: false,
+      providers: [L.esri.Geocoding.arcgisOnlineProvider({
+        apikey: apiKey,
+        nearby: [42.36, -71.06],
+      })]
+    }).addTo(map);
+
+    /****************************************************
+      * Adapted from geocoding tutorial to handle search results
+      * Removed the popup and changed marker
+      * https://developers.arcgis.com/esri-leaflet/geocode-and-search/search-for-an-address/
+    ****************************************************/
+    
+    const results = L.layerGroup().addTo(map);
+
+    // https://github.com/pointhi/leaflet-color-markers
+    const startIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    searchControl.on("results", data => {
+      results.clearLayers();
+      if(data.results.length) {
+        const latlng = data.results[0].latlng;
+        const marker = L.marker(latlng, { icon: startIcon });
+        results.addLayer(marker);
+        getClosestFacility(latlng).then(showClosestFacility);
+      }
+    });
+
+    /****************************************************
+      * Adapted from feature service and closest facility service documentation
+    ****************************************************/
+
+    const authentication = new arcgisRest.ApiKey({
+      key: apiKey
+    });
+
+    function getClosestFacility(latlng){
+      return new Promise((resolved, rejected) => {
+        layer.query().run((err, featureSet) => {
+          if(err) {
+            rejected(err);
+          } else {
+            const facilities = featureSet.features.map(f => f.geometry.coordinates);
+            resolved(facilities);
+          }
+        });
+      }).then(facilities => {
+        const incidents = [
+          [latlng.lng, latlng.lat]
+        ];
+        return arcgisRest.closestFacility({
+          incidents: incidents,
+          facilities: facilities,
+          returnCFRoutes: true,
+          params: {
+            defaultTargetFacilityCount: 1,
+            impedanceAttributeName: 'Miles'
+          },
+          authentication: authentication
+        });
+      });
+    }
+
+    const routeLines = L.layerGroup().addTo(map);
+
+    async function showClosestFacility(facilityResponse){
+      routeLines.clearLayers();
+    
+      const { routes, directions } = facilityResponse;
+
+      const route = L.geoJSON(routes.geoJson).addTo(routeLines);
+      map.fitBounds(route.getBounds());
+
+      const { features, summary } = directions[0];
+
+      const distance = Math.round(summary.totalLength);
+      route.bindPopup(`
+        <h3>Directions</h3>
+        <p>${Math.round(summary.totalTime)} minutes <i>(${distance} ${distance === 1 ? 'mile' : 'miles'})</i></p>
+        <ol>
+          <li>${features[1].attributes.text}</li>
+          <li>${features[2].attributes.text}</li>
+          <li>${features[3].attributes.text}</li>
+        </ol>
+        <a>... more</a>
+      `);
+      route.openPopup();
+    }
+
+  </script>
+
+</body>
+
+</html>
