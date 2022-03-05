@@ -1,0 +1,168 @@
+<!-- Host your data, perform a sql query, spatial query, better performance with a VTL-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>OpenLayers Tutorials: Display a map</title>
+
+    <style>
+      html,
+      body,
+      #map {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        color: #323232;
+      }
+
+      #query-select {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 4px 8px;
+        font-size: 16px;
+        border-radius: 0; /* Causes more uniform appearance across browsers. */
+      }
+
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ol-mapbox-style@6.1.4/dist/olms.js" type="text/javascript"></script>
+
+    <script src="https://unpkg.com/@esri/arcgis-rest-request@3.0.0/dist/umd/request.umd.js"></script>
+    <script src="https://unpkg.com/@esri/arcgis-rest-auth@3.0.0/dist/umd/auth.umd.js"></script>
+    <script src="https://unpkg.com/@esri/arcgis-rest-feature-layer@3.0.0/dist/umd/feature-layer.umd.js"></script>
+    <script src="https://unpkg.com/@esri/arcgis-rest-demographics@3.0.0/dist/umd/demographics.umd.js"></script>
+    <script src="https://unpkg.com/ol-popup@4.0.0"></script>
+    <link rel="stylesheet" href="https://unpkg.com/ol-popup@4.0.0/src/ol-popup.css" />
+
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <select id="query-select">
+      <option value="1=1" selected>Choose a WHERE clause...</option>
+      <option value="UseType = 'Residential'">UseType = 'Residential'</option>
+      <option value="UseType = 'Government'">UseType = 'Government'</option>
+      <option value="UseType = 'Irrigated Farm'">UseType = 'Irrigated Farm'</option>
+      <option value="TaxRateArea = 10853">TaxRateArea = 10853</option>
+      <option value="TaxRateArea = 10860">TaxRateArea = 10860</option>
+      <option value="TaxRateArea = 08637">TaxRateArea = 08637</option>
+      <option value="Roll_LandValue > 1000000">Roll_LandValue &gt; 1000000</option>
+      <option value="Roll_LandValue < 1000000">Roll_LandValue &lt; 1000000</option>
+    </select>
+    <script>
+
+      const apiKey = "AAPK9be46189cbd44153968e158ad2a6c87c7ZWw1yXvBZ7WtLtXoMXNEhj8FzgbD6Etk4a3BLKqv0V3yNyCnDN79kYgerZzIFO3"
+;
+
+      const map = new ol.Map({
+        target: "map"
+      });
+
+      map.setView(
+        new ol.View({
+          center: ol.proj.fromLonLat([-118.805, 34.027]),
+          zoom: 12
+        })
+      );
+
+      const basemapId = "ArcGIS:Community";
+      const basemapURL = "https://basemaps-api.arcgis.com/arcgis/rest/services/styles/" + basemapId + "?type=style&token=" + apiKey;
+
+      const parcelLayer = new ol.layer.Vector();
+      olms(map, basemapURL).then((map) => {
+
+        map.addLayer(parcelLayer);
+        
+        const popup = new Popup();
+        map.addOverlay(popup);
+
+        map.on("click", (event) => {
+
+          const lonLat = ol.proj.toLonLat(event.coordinate);
+
+          const authentication = new arcgisRest.ApiKey({
+            key: apiKey
+          });
+// Demographics
+          arcgisRest
+            .queryDemographicData({
+              studyAreas: [{ geometry: { x: lonLat[0], y: lonLat[1] } }],
+              authentication: authentication
+            })
+
+
+            .then((response) => {
+
+              const data = document.getElementById("data");
+              const featureSet = response.results[0].value.FeatureSet;
+
+              let message;
+              if (featureSet.length > 0 && featureSet[0].features.length > 0) {
+                const attributes = featureSet[0].features[0].attributes;
+                message =
+                  `<b>Data for a 1 mile search radius</b>` +
+                  [
+                    `<br>Population: ${attributes.TOTPOP}`,
+                    // `Males: ${attributes.TOTMALES} `,
+                    // `Females: ${attributes.TOTFEMALES}`,
+                    `Average Household Size: ${attributes.AVGHHSZ}`
+                  ].join("<br>");
+              } else {
+                message = "Data not available for this location.";
+              }
+              popup.show(event.coordinate, message);
+
+            });
+
+        });
+      });
+
+      // Query SQL 
+
+      function executeQuery(whereClause, geometry) {
+        arcgisRest
+          .queryFeatures({
+            url:"https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/LA_County_Parcels/FeatureServer/0",
+            geometry: geometry,
+            geometryType: "esriGeometryEnvelope",
+            inSR: 4326, // EPSG:4326 uses latitudes and longitudes
+            spatialRel: "esriSpatialRelIntersects",
+            where: whereClause,
+
+            f: "geojson",
+            returnGeometry: true,
+            outFields: ["APN", "UseType", "TaxRateCity", " Roll_LandValue"]
+          })
+
+          .then((response) => {
+            const geojson = new ol.format.GeoJSON({
+              defaultDataProjection: "EPSG:4326",
+              featureProjection: "EPSG:3857"
+            });
+
+            let newSource = new ol.source.Vector({
+              features: geojson.readFeatures(response)
+            });
+            parcelLayer.setSource(newSource);
+          });
+
+      }
+      // Listen for changes
+      const select = document.getElementById("query-select");
+      select.addEventListener("change", () => {
+        const whereClause = select.value;
+
+        const extent3857 = map.getView().calculateExtent(map.getSize());
+        const extent4326 = ol.proj.transformExtent(extent3857, "EPSG:3857", "EPSG:4326");
+        executeQuery(whereClause, extent4326);
+      });
+    </script>
+  </body>
+</html>
