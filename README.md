@@ -1,6 +1,6 @@
 # ArcGIS REST API Workshop
 
-Companion example code for the REST API workshop at Esri Developer Summit.
+Companion example code for the REST API workshop at Esri Developer Summit. **asd**
 
 ## Contents
 
@@ -17,10 +17,14 @@ Companion example code for the REST API workshop at Esri Developer Summit.
 - [Palm Springs trails polyline feature service](https://services.arcgis.com/2ycVue24EK6qzjat/arcgis/rest/services/PS_trails/FeatureServer)
 - [Palm Springs point of interest CSV](./data/palm-springs-poi.csv)
 
-## Resources
+## Additional resources
 
 - [ArcGIS Developer](https://developers.arcgis.com)
-- [KoopJS](https://koopjs.github.io/) [repo](https://github.com/koopjs)
-- [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-- [Postman](https://www.postman.com/arcgis-developer/workspace/arcgis-location-services/overview)
+- [Awesome ArcGIS Developer](https://github.com/esri/awesome-arcgis-developer)
+- [ArcGIS Hosted Feature Services behind the scenes](https://twitter.com/hhkaos/status/1430123756803006468) 
+- Projects emulating ArcGIS REST services:
+	- [Social real-time app for Spanish elections](https://github.com/esri-es/twitter-rt-service) ([preview](https://youtu.be/PeTzi-ficFo?t=413)) - ["Fake" ArcGIS websocket server / wrapper](https://github.com/esri-es/arcgis_websocket_server)
+	- [KoopJS](https://koopjs.github.io/) [repo](https://github.com/koopjs?type=source) - "Fake" ArcGIS Feature Server / wrapper (see an [integration with PostGIS example](https://youtu.be/-TCFaXQuhUE?t=688))
+- [Old Postman collections](https://github.com/esri-es/ArcGIS-REST-API)
 - [JSON lint](https://jsonlint.com)
+- [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
