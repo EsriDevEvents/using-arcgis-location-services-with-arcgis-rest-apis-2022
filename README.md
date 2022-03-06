@@ -28,3 +28,4 @@ Companion example code for the REST API workshop at Esri Developer Summit. **asd
 - [Old Postman collections](https://github.com/esri-es/ArcGIS-REST-API)
 - [JSON lint](https://jsonlint.com)
 - [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- [Symbl AI API](https://docs.symbl.ai/docs/)
