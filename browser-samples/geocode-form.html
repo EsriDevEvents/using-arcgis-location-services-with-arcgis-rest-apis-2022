@@ -7,7 +7,7 @@
   <body>
   <h1>Geocode form</h1>
   <p>Enter an address or point of interest:</p>
-  <form method="GET" action="https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates">
+  <form method="POST" action="https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates">
       <label for="address">Point of interest:</label><input type="text" name="address">
       <input type="hidden" name="category" value="POI">
       <input type="hidden" name="outFields" value="*">

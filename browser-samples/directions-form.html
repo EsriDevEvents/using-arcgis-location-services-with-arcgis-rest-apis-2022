@@ -7,12 +7,12 @@
   <body>
   <h1>Directions form</h1>
   <p>Enter stop points to get directions:</p>
-  <form method="GET" action="https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve">
+  <form method="POST" action="https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve">
       <label for="address">Stops:</label><input type="text" name="stops">
       <input type="hidden" name="startTime" value="now">
       <input type="hidden" name="returnDirections" value="true">
       <input type="hidden" name="directionsLanguage" value="en">
-      <input type="hidden" name="f" value="pjson">
+      <input type="hidden" name="f" value="json">
       <input type="hidden" name="token" value="YOUR_API_KEY">
       <input type="submit" value="Post">
   </form>
