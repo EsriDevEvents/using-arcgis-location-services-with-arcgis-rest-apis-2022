@@ -29,3 +29,4 @@ Companion example code for the REST API workshop at Esri Developer Summit. **asd
 - [JSON lint](https://jsonlint.com)
 - [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 - [Symbl AI API](https://docs.symbl.ai/docs/)
+- [ArcGIS Online advanced (items) search](https://esri-es.github.io/arcgis-developer-resources/arcgis-online/search/)
