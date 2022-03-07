@@ -59,7 +59,8 @@
     <script>
       let session = null;
       const clientId = "CLIENT_ID";
-      const redirectUri = window.location.origin + "/authenticate.html";
+      const url = window.location.href;
+      const redirectUri = url.substr(0,url.lastIndexOf("/")) + "/authenticate.html";
 
       document.getElementById("withPopupButton").addEventListener("click", (event) => {
         // Begin an OAuth2 login using a popup.
