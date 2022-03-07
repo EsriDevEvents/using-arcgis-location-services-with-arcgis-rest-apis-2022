@@ -19,9 +19,13 @@ Companion example code for the REST API workshop at Esri Developer Summit. **asd
 
 ## Additional resources
 
-* [Awesome ArcGIS Developer](https://github.com/esri/awesome-arcgis-developer)
+- [ArcGIS Developer](https://developers.arcgis.com)
+- [Awesome ArcGIS Developer](https://github.com/esri/awesome-arcgis-developer)
 - [ArcGIS Hosted Feature Services behind the scenes](https://twitter.com/hhkaos/status/1430123756803006468) 
 - Projects emulating ArcGIS REST services:
 	- [Social real-time app for Spanish elections](https://github.com/esri-es/twitter-rt-service) ([preview](https://youtu.be/PeTzi-ficFo?t=413)) - ["Fake" ArcGIS websocket server / wrapper](https://github.com/esri-es/arcgis_websocket_server)
-	- [KoopJS](https://github.com/koopjs?type=source) - "Fake" ArcGIS Feature Server / wrapper (see an [integration with PostGIS example](https://youtu.be/-TCFaXQuhUE?t=688))
+	- [KoopJS](https://koopjs.github.io/) [repo](https://github.com/koopjs?type=source) - "Fake" ArcGIS Feature Server / wrapper (see an [integration with PostGIS example](https://youtu.be/-TCFaXQuhUE?t=688))
 - [Old Postman collections](https://github.com/esri-es/ArcGIS-REST-API)
+- [JSON lint](https://jsonlint.com)
+- [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- [Symbl AI API](https://docs.symbl.ai/docs/)
