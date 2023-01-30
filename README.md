@@ -1,6 +1,6 @@
 # ArcGIS REST API Workshop
 
-Companion example code for the REST API workshop at Esri Developer Summit. **asd**
+Companion example code for the REST API workshop at Esri Developer Summit.
 
 ## Contents
 
